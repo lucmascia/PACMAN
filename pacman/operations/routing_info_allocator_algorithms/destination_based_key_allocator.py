@@ -12,7 +12,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 from spinn_utilities.progress_bar import ProgressBar
 from pacman.model.constraints.key_allocator_constraints import (
     AbstractKeyAllocatorConstraint)
@@ -23,6 +22,9 @@ from pacman.utilities.utility_calls import (
     check_algorithm_can_support_constraints)
 from pacman.exceptions import PacmanConfigurationException
 
+MAX_KEYS_SUPPORTED = 2048
+MASK = 0xFFFFF800
+
 
 class DestinationBasedRoutingInfoAllocator(object):
     """ A routing key allocator that operates for people who wish to have a\
@@ -31,9 +33,6 @@ class DestinationBasedRoutingInfoAllocator(object):
     """
 
     __slots__ = []
-
-    MAX_KEYS_SUPPORTED = 2048
-    MASK = 0xFFFFF800
 
     def __call__(self, machine_graph, placements, n_keys_map):
         """
@@ -79,16 +78,16 @@ class DestinationBasedRoutingInfoAllocator(object):
     def _allocate_partition_route(self, edge, placements, graph, n_keys_map):
         destination = edge.post_vertex
         placement = placements.get_placement_of_vertex(destination)
-        keys_and_masks = list([BaseKeyAndMask(
-            base_key=self._get_key_from_placement(placement), mask=self.MASK)])
+        key_and_mask = BaseKeyAndMask(
+            base_key=self._get_key_from_placement(placement), mask=MASK)
         partition = graph.get_outgoing_edge_partition_starting_at_vertex(
             edge.pre_vertex)
         n_keys = n_keys_map.n_keys_for_partition(partition)
-        if n_keys > self.MAX_KEYS_SUPPORTED:
+        if n_keys > MAX_KEYS_SUPPORTED:
             raise PacmanConfigurationException(
                 "Only edges which require less than {} keys are"
-                " supported".format(self.MAX_KEYS_SUPPORTED))
-        return PartitionRoutingInfo(keys_and_masks, edge)
+                " supported".format(MAX_KEYS_SUPPORTED))
+        return PartitionRoutingInfo([key_and_mask], edge)
 
     @staticmethod
     def _get_key_from_placement(placement):

@@ -94,9 +94,9 @@ class BasicRoutingInfoAllocator(object):
             raise PacmanRouteInfoAllocationException(
                 "The vertex '{}' has no placement".format(vertex))
 
-        keys_and_masks = list([BaseKeyAndMask(
-            base_key=self._get_key_from_placement(placement), mask=MASK)])
-        return PartitionRoutingInfo(keys_and_masks, partition)
+        key_and_mask = BaseKeyAndMask(
+            base_key=self._get_key_from_placement(placement), mask=MASK)
+        return PartitionRoutingInfo([key_and_mask], partition)
 
     @staticmethod
     def _get_key_from_placement(placement):

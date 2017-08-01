@@ -35,9 +35,8 @@ class BasicRouteMerger(object):
         tables = MulticastRoutingTables()
         previous_masks = dict()
 
-        progress = ProgressBar(
-            len(router_tables.routing_tables) * 2,
-            "Compressing Routing Tables")
+        progress = ProgressBar(router_tables.routing_tables,
+                               "Compressing Routing Tables")
 
         # Create all masks without holes
         allowed_masks = [_32_BITS - ((2 ** i) - 1) for i in range(33)]
@@ -83,46 +82,47 @@ class BasicRouteMerger(object):
     def _merge_routes(self, router_table, previous_masks):
         merged_routes = MulticastRoutingTable(router_table.x, router_table.y)
         keys_merged = set()
-
         entries = router_table.multicast_routing_entries
         for router_entry in entries:
             if router_entry.routing_entry_key in keys_merged:
                 continue
 
-            mask = router_entry.mask
-            if mask & _UPPER_16_BITS == _UPPER_16_BITS:
-                for extra_bits in self._get_merge_masks(mask, previous_masks):
-                    new_mask = _UPPER_16_BITS | extra_bits
-                    new_key = router_entry.routing_entry_key & new_mask
-                    new_n_keys = ~new_mask & _32_BITS
-
-                    # Get candidates for this particular possible merge
-                    potential_merges = self._mergeable_entries(
-                        router_entry, entries, new_key, new_mask,
-                        new_key + new_n_keys, keys_merged)
-
-                    # Only do a merge if there's real merging to do
-                    if len(potential_merges) > 1:
-                        merged_routes.add_multicast_routing_entry(
-                            MulticastRoutingEntry(
-                                new_key, new_mask,
-                                router_entry.processor_ids,
-                                router_entry.link_ids, defaultable=False))
-                        keys_merged.update([
-                            route.routing_entry_key
-                            for route in potential_merges])
-                        break
-                else:
-                    # print("Was not able to merge", hex(key))
-                    merged_routes.add_multicast_routing_entry(router_entry)
-                    keys_merged.add(router_entry.routing_entry_key)
-            else:
+            if (router_entry.mask & _UPPER_16_BITS != _UPPER_16_BITS or
+                    not self._merge_route(
+                        entries, router_entry.mask, previous_masks,
+                        router_entry, merged_routes, keys_merged)):
+                # print("Was not able to merge", hex(key))
                 merged_routes.add_multicast_routing_entry(router_entry)
                 keys_merged.add(router_entry.routing_entry_key)
         return merged_routes
 
+    def _merge_route(
+            self, entries, mask, previous_masks, router_entry, merged_routes,
+            keys_merged):
+        for extra_bits in self._get_merge_masks(mask, previous_masks):
+            new_mask = _UPPER_16_BITS | extra_bits
+            new_key = router_entry.routing_entry_key & new_mask
+            new_n_keys = ~new_mask & _32_BITS
+
+            # Get candidates for this particular possible merge
+            potential_merges = self._mergeable_entries(
+                router_entry, entries, new_key, new_mask,
+                new_key + new_n_keys, keys_merged)
+
+            # Only do a merge if there's real merging to do
+            if len(potential_merges) > 1:
+                merged_routes.add_multicast_routing_entry(
+                    MulticastRoutingEntry(
+                        new_key, new_mask, router_entry.processor_ids,
+                        router_entry.link_ids, defaultable=False))
+                keys_merged.update(
+                    route.routing_entry_key for route in potential_merges)
+                return True
+        return False
+
+    @staticmethod
     def _mergeable_entries(
-            self, entry, entries, new_key, new_mask, new_last_key, merged):
+            entry, entries, new_key, new_mask, new_last_key, merged):
         # Check that all the cores on this chip have the same route as this is
         # the only way we can merge here
         potential_merges = set()

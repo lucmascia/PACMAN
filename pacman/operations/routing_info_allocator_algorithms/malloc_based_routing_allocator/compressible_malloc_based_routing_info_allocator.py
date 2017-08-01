@@ -83,8 +83,7 @@ class CompressibleMallocBasedRoutingInfoAllocator(ElementAllocatorAlgorithm):
                 "MallocBasedRoutingInfoAllocator does not support FlexiField")
 
         # Even non-continuous keys will be continuous
-        for group in noncontinuous:
-            continuous.add(group)
+        continuous.extend(noncontinuous)
 
         # Go through the groups and allocate keys
         progress = ProgressBar(
@@ -148,7 +147,6 @@ class CompressibleMallocBasedRoutingInfoAllocator(ElementAllocatorAlgorithm):
             key=lambda item: len(routing_tables.get_entries_for_router(
                 item[0], item[1]))))
         for x, y in routers:
-
             # Find all partitions that share a route in this table
             partitions_by_route = defaultdict(OrderedSet)
             routing_table = routing_tables.get_entries_for_router(x, y)
@@ -205,19 +203,19 @@ class CompressibleMallocBasedRoutingInfoAllocator(ElementAllocatorAlgorithm):
         return routing_infos
 
     @staticmethod
-    def _update_routing_objects(
-            keys_and_masks, routing_infos, group):
+    def _update_routing_objects(keys_and_masks, routing_infos, group):
         # Allocate the routing information
         partition_info = PartitionRoutingInfo(keys_and_masks, group)
         routing_infos.add_partition_info(partition_info)
 
     @staticmethod
     def _get_key_ranges(key, mask):
-        """ Get a generator of base_key, n_keys pairs that represent ranges
+        """ Get a generator of base_key, n_keys pairs that represent ranges\
             allowed by the mask
 
         :param key: The base key
         :param mask: The mask
+        :return: iterator
         """
         unwrapped_mask = expand_to_bit_array(mask)
         first_zeros = list()
@@ -235,8 +233,8 @@ class CompressibleMallocBasedRoutingInfoAllocator(ElementAllocatorAlgorithm):
                 remaining_zeros.append(pos)
             pos -= 1
 
-        # Loop over 2^len(remaining_zeros) to produce the base key,
-        # with n_keys being 2^len(first_zeros)
+        # Loop over 2^len(remaining_zeros) to produce the base key, with
+        # n_keys being 2^len(first_zeros)
         n_sets = 2 ** len(remaining_zeros)
         n_keys = 2 ** len(first_zeros)
         if not remaining_zeros:

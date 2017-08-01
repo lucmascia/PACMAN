@@ -284,7 +284,7 @@ class MallocBasedRoutingInfoAllocator(ElementAllocatorAlgorithm):
                 break
 
         # If we found a working key and mask that can be assigned,
-        # Allocate them
+        # allocate them
         if key_found is not None and mask_found is not None:
             for (base_key, n_keys) in self._get_key_ranges(key_found, mask):
                 self._allocate_elements(base_key, n_keys)

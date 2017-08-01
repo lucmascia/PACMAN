@@ -47,6 +47,13 @@ class NetworkSpecification(object):
 
     @staticmethod
     def _write_report(f, vertex, graph):
+        """Print information on a vertex.
+
+        :param f: Where to print the information to.
+        :param vertex: The vertex to print information about.
+        :param graph: The graph containing the vertex, used to get the edge \
+            partitions originating at the vertex.
+        """
         if isinstance(vertex, ApplicationVertex):
             f.write("Vertex {}, size: {}, model: {}\n".format(
                 vertex.label, vertex.n_atoms, vertex.__class__.__name__))
@@ -56,14 +63,12 @@ class NetworkSpecification(object):
 
         f.write("    Constraints:\n")
         for constraint in vertex.constraints:
-            f.write("        {}\n".format(
-                str(constraint)))
+            f.write("        {}\n".format(str(constraint)))
 
         f.write("    Outgoing Edge Partitions:\n")
         for partition in graph.get_outgoing_edge_partitions_starting_at_vertex(
                 vertex):
-            f.write("    Partition {}:\n".format(
-                partition.identifier))
+            f.write("    Partition {}:\n".format(partition.identifier))
             for edge in partition.edges:
                 f.write("        Edge: {}, From {} to {}, model: {}\n".format(
                     edge.label, edge.pre_vertex.label,
