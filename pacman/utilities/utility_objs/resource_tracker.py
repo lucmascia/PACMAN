@@ -639,11 +639,10 @@ class ResourceTracker(object):
         :rtype: bool
         """
         if board_address is None and tag is not None:
-            for board_addr in self._boards_with_ip_tags:
-                if (board_addr not in self._tags_by_board or
-                        tag in self._tags_by_board[board_addr]):
-                    return True
-            return False
+            return any(
+                addr not in self._tags_by_board
+                or tag in self._tags_by_board[addr]
+                for addr in self._boards_with_ip_tags)
         elif board_address is not None and tag is None:
             return board_address in self._boards_with_ip_tags
         elif board_address is None and tag is None:

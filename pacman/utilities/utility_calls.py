@@ -60,8 +60,8 @@ def locate_first_constraint_of_type(constraints, constraint_type):
 
 
 def _is_constraint_supported(constraint, supported_constraints):
-    return any(isinstance(constraint, supported_constraint)
-               for supported_constraint in supported_constraints)
+    return any(isinstance(constraint, c_class)
+               for c_class in supported_constraints)
 
 
 def check_algorithm_can_support_constraints(
@@ -151,7 +151,7 @@ def is_equal_or_None(a, b):
     """ If a and b are both not None, return True iff they are equal,\
         otherwise return True
     """
-    return (a is None or b is None or a == b)
+    return a is None or b is None or a == b
 
 
 def is_single(iterable):

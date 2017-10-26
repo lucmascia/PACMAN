@@ -65,5 +65,4 @@ class FixedKeyFieldConstraint(AbstractKeyAllocatorConstraint):
         return hash(frozen_fields)
 
     def __repr__(self):
-        return "FixedKeyFieldConstraint(fields={})".format(
-            self._fields)
+        return "FixedKeyFieldConstraint(fields={})".format(self._fields)

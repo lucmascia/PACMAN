@@ -139,5 +139,5 @@ class VertexSorter(object):
         """
         if opts is None:
             return True
-        return all(getattr(constraint, opt) is not None
-                   for opt in opts)
+
+        return all(getattr(constraint, opt) is not None for opt in opts)

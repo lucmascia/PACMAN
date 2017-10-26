@@ -33,11 +33,8 @@ import functools
 
 
 def _conflict(x, y, post_x, post_y):
-    if x is not None and post_x is not None and x != post_x:
-        return True
-    if y is not None and post_y is not None and y != post_y:
-        return True
-    return False
+    return (x is not None and post_x is not None and x != post_x) or (
+        y is not None and post_y is not None and y != post_y)
 
 
 class OneToOnePlacer(RadialPlacer):

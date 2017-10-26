@@ -47,5 +47,4 @@ class FlexiKeyFieldConstraint(AbstractKeyAllocatorConstraint):
         return hash(frozenset(self._fields))
 
     def __repr__(self):
-        return "FlexiKeyFieldConstraint(fields={})".format(
-            self._fields)
+        return "FlexiKeyFieldConstraint(fields={})".format(self._fields)
