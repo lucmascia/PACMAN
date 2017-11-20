@@ -94,7 +94,6 @@ class PartitionAndPlacePartitioner(object):
 
         # Partition one vertex at a time
         for vertex in vertices:
-
             # check that the vertex hasn't already been partitioned
             machine_vertices = graph_mapper.get_machine_vertices(vertex)
 

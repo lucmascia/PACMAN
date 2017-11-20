@@ -75,6 +75,14 @@ class _PlacementReport(_Report):
             self, "Generate_placement_reports", folder, name, *args)
 
 
+def _header(f, title, hostname):
+    indent = " " * 8
+    f.write(indent + title + "\n")
+    f.write(indent + ("=" * len(title)) + "\n\n")
+    f.write("Generated: {} for target machine '{}'\n\n".format(
+        time.strftime("%c"), hostname))
+
+
 def tag_allocator_report(report_folder, tag_infos):
     """ Reports the tags that are being used by the tool chain for this\
         simulation
@@ -84,14 +92,14 @@ def tag_allocator_report(report_folder, tag_infos):
     :rtype: None
     """
     with _Report("Generate_tag_report", report_folder, _TAGS_FILENAME) as f:
-        progress = ProgressBar(
-            len(list(tag_infos.ip_tags)) +
-            len(list(tag_infos.reverse_ip_tags)),
-            "Reporting Tags")
-        for ip_tag in progress.over(tag_infos.ip_tags, False):
-            f.write(str(ip_tag) + "\n")
-        for reverse_ip_tag in progress.over(tag_infos.reverse_ip_tags):
-            f.write(str(reverse_ip_tag) + "\n")
+        iptags = list(tag_infos.ip_tags)
+        reviptags = list(tag_infos.reverse_ip_tags)
+        with ProgressBar(len(iptags) + len(reviptags),
+                         "Reporting Tags") as progress:
+            for ip_tag in progress.over(iptags, False):
+                f.write("{}\n".format(ip_tag))
+            for reverse_ip_tag in progress.over(reviptags, False):
+                f.write("{}\n".format(reverse_ip_tag))
 
 
 def placer_reports_with_application_graph(
@@ -236,13 +244,7 @@ def router_report_from_paths(
                  _ROUTING_FILENAME) as f:
         progress = ProgressBar(machine_graph.n_outgoing_edge_partitions,
                                "Generating Routing path report")
-
-        f.write("        Edge Routing Report\n")
-        f.write("        ===================\n\n")
-        time_date_string = time.strftime("%c")
-        f.write("Generated: {}".format(time_date_string))
-        f.write(" for target machine '{}'".format(hostname))
-        f.write("\n\n")
+        _header(f, "Edge Routing Report", hostname)
 
         for partition in progress.over(
                 machine_graph.outgoing_edge_partitions):
@@ -284,13 +286,7 @@ def partitioner_report(report_folder, hostname, graph, graph_mapper):
     with _PlacementReport(report_folder, _PARTITIONING_FILENAME) as f:
         progress = ProgressBar(
             graph.n_vertices, "Generating partitioner report")
-
-        f.write("        Placement Information by Vertex\n")
-        f.write("        ===============================\n\n")
-        time_date_string = time.strftime("%c")
-        f.write("Generated: {}".format(time_date_string))
-        f.write(" for target machine '{}'".format(hostname))
-        f.write("\n\n")
+        _header(f, "Placement Information by Vertex", hostname)
 
         for vertex in progress.over(graph.vertices):
             _write_one_vertex_partition(f, vertex, graph_mapper)
@@ -333,13 +329,7 @@ def placement_report_with_application_graph_by_vertex(
     with _PlacementReport(report_folder, _PLACEMENT_VTX_GRAPH_FILENAME) as f:
         progress = ProgressBar(
             graph.n_vertices, "Generating placement report")
-
-        f.write("        Placement Information by Vertex\n")
-        f.write("        ===============================\n\n")
-        time_date_string = time.strftime("%c")
-        f.write("Generated: {}".format(time_date_string))
-        f.write(" for target machine '{}'".format(hostname))
-        f.write("\n\n")
+        _header(f, "Placement Information by Vertex", hostname)
 
         used_processors_by_chip = dict()
         used_sdram_by_chip = dict()
@@ -404,13 +394,7 @@ def placement_report_without_application_graph_by_vertex(
     with _PlacementReport(report_folder, _PLACEMENT_VTX_SIMPLE_FILENAME) as f:
         progress = ProgressBar(machine_graph.n_vertices,
                                "Generating placement report")
-
-        f.write("        Placement Information by Vertex\n")
-        f.write("        ===============================\n\n")
-        time_date_string = time.strftime("%c")
-        f.write("Generated: {}".format(time_date_string))
-        f.write(" for target machine '{}'".format(hostname))
-        f.write("\n\n")
+        _header(f, "Placement Information by Vertex", hostname)
 
         used_processors_by_chip = dict()
         used_sdram_by_chip = dict()
@@ -463,13 +447,7 @@ def placement_report_with_application_graph_by_core(
     with _PlacementReport(report_folder, _PLACEMENT_CORE_GRAPH_FILENAME) as f:
         progress = ProgressBar(
             machine.n_chips, "Generating placement by core report")
-
-        f.write("        Placement Information by Core\n")
-        f.write("        =============================\n\n")
-        time_date_string = time.strftime("%c")
-        f.write("Generated: {}".format(time_date_string))
-        f.write(" for target machine '{}'".format(hostname))
-        f.write("\n\n")
+        _header(f, "Placement Information by Core", hostname)
 
         for chip in progress.over(machine.chips):
             _write_one_chip_application_placement(
@@ -519,13 +497,7 @@ def placement_report_without_application_graph_by_core(
     with _PlacementReport(report_folder, _PLACEMENT_CORE_SIMPLE_FILENAME) as f:
         progress = ProgressBar(
             machine.chips, "Generating placement by core report")
-
-        f.write("        Placement Information by Core\n")
-        f.write("        =============================\n\n")
-        time_date_string = time.strftime("%c")
-        f.write("Generated: {}".format(time_date_string))
-        f.write(" for target machine '{}'".format(hostname))
-        f.write("\n\n")
+        _header(f, "Placement Information by Core", hostname)
 
         for chip in progress.over(machine.chips):
             _write_one_chip_machine_placement(f, chip, placements)
@@ -565,14 +537,11 @@ def sdram_usage_report_per_chip(
     :rtype: None
     """
     with _PlacementReport(report_folder, _SDRAM_FILENAME) as f:
-        f.write("        Memory Usage by Core\n")
-        f.write("        ====================\n\n")
-        time_date_string = time.strftime("%c")
-        f.write("Generated: %s" % time_date_string)
-        f.write(" for target machine '{}'".format(hostname))
-        f.write("\n\n")
+        _header(f, "Memory Usage by Core", hostname)
 
-        progress = ProgressBar((len(placements) * 2 + machine.n_chips * 2),
+        placements = sorted(placements.placements,
+                            key=lambda x: x.vertex.label)
+        progress = ProgressBar(len(placements) + machine.n_chips,
                                "Generating SDRAM usage report")
         f.write("Planned by partitioner\n")
         f.write("----------------------\n")

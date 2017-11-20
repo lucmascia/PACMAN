@@ -41,28 +41,29 @@ class ExternalAlgorithm(AbstractAlgorithm):
             generated_output_tokens)
         self._command_line_arguments = command_line_arguments
 
+    def _run_to_completion(self, args):
+        progress = ProgressBar(
+            1, "Running external algorithm {}".format(self._algorithm_id))
+        try:
+            # Run the external command
+            child = subprocess.Popen(
+                list(args), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                stdin=subprocess.PIPE)
+            child.wait()
+            return child
+        finally:
+            progress.update()
+            progress.end()
+
+
     @overrides(AbstractAlgorithm.call)
     def call(self, inputs):
-
         # Get the inputs to pass as the arguments
         arg_inputs = self._get_inputs(inputs)
 
-        # Convert the arguments using the inputs
-        args = [
-            arg.format(**arg_inputs) for arg in self._command_line_arguments
-        ]
-
-        algorithm_progress_bar = ProgressBar(
-            1, "Running external algorithm {}".format(self._algorithm_id))
-
-        # Run the external command
-        child = subprocess.Popen(
-            args, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-            stdin=subprocess.PIPE)
-        child.wait()
-
-        algorithm_progress_bar.update(1)
-        algorithm_progress_bar.end()
+        # Run the child with arguments appropriately converted
+        child = self._run_to_completion(
+            arg.format(**arg_inputs) for arg in self._command_line_arguments)
 
         # Detect any errors
         if child.returncode != 0:
