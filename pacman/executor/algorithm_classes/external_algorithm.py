@@ -42,19 +42,14 @@ class ExternalAlgorithm(AbstractAlgorithm):
         self._command_line_arguments = command_line_arguments
 
     def _run_to_completion(self, args):
-        progress = ProgressBar(
-            1, "Running external algorithm {}".format(self._algorithm_id))
-        try:
+        with ProgressBar(1, "Running external algorithm {}".format(
+                self._algorithm_id)):
             # Run the external command
             child = subprocess.Popen(
                 list(args), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                 stdin=subprocess.PIPE)
             child.wait()
             return child
-        finally:
-            progress.update()
-            progress.end()
-
 
     @overrides(AbstractAlgorithm.call)
     def call(self, inputs):
