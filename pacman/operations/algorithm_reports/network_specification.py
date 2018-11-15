@@ -53,4 +53,10 @@ class NetworkSpecification(object):
                 f.write("        Edge: {}, From {} to {}, model: {}\n".format(
                     edge.label, edge.pre_vertex.label,
                     edge.post_vertex.label, edge.__class__.__name__))
+        incoming_edges = graph.get_edges_ending_at_vertex(vertex)
+        f.write("    {} Incoming Edges:\n".format(len(incoming_edges)))
+        for edge in incoming_edges:
+            f.write("        Edge: {}, From {} to {}, model: {}\n".format(
+                edge.label, edge.pre_vertex.label, edge.post_vertex.label,
+                edge.__class__.__name__))
         f.write("\n")
