@@ -18,6 +18,8 @@ from pacman.utilities.algorithm_utilities.placer_algorithm_utilities import (
     sort_vertices_by_known_constraints)
 from pacman.utilities.utility_objs import ResourceTracker
 
+from spinn_front_end_common.utilities import globals_variables
+
 logger = logging.getLogger(__name__)
 
 
@@ -215,6 +217,14 @@ class PartitionAndPlacePartitioner(object):
                     machine_vertex, vertex_slice, vertex)
 
                 progress.update(vertex_slice.n_atoms)
+            #add all the spinnakear edges and partitions to machine graph from the gloabl "original machine graph"
+            original_machine_graph = globals_variables.get_simulator()._original_machine_graph
+            for outgoing_partition in \
+                    original_machine_graph.outgoing_edge_partitions:
+                # machine_graph.add_outgoing_edge_partition(outgoing_partition)
+                for edge in outgoing_partition.edges:
+                    machine_graph.add_edge(
+                        edge, outgoing_partition.identifier)
 
     @staticmethod
     def _reallocate_resources(
