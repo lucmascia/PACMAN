@@ -7,6 +7,7 @@ from pacman.model.graphs.abstract_virtual_vertex import AbstractVirtualVertex
 from pacman.model.constraints.partitioner_constraints import (
     AbstractPartitionerConstraint, MaxVertexAtomsConstraint,
     FixedVertexAtomsConstraint, SameAtomsAsVertexConstraint)
+from pacman.model.constraints.placer_constraints import SameChipAsConstraint,ChipAndCoreConstraint
 from pacman.model.graphs.common import GraphMapper, Slice
 from pacman.model.graphs.machine import MachineGraph
 from pacman.utilities import utility_calls as utils
@@ -19,6 +20,8 @@ from pacman.utilities.algorithm_utilities.placer_algorithm_utilities import (
 from pacman.utilities.utility_objs import ResourceTracker
 
 from spinn_front_end_common.utilities import globals_variables
+
+from spinnakear_vertex import SpiNNakEarVertex
 
 logger = logging.getLogger(__name__)
 
@@ -317,6 +320,21 @@ class PartitionAndPlacePartitioner(object):
             ip_tags = None
             reverse_ip_tags = None
             if not isinstance(vertex, AbstractVirtualVertex):
+
+                if isinstance(vertex,SpiNNakEarVertex):
+                    # if vertex._mv_index_list[vertex_slice.lo_atom] == "ihc":
+                    if lo_atom in vertex._new_chip_indices:
+                        #first remove any previous chip and core contraints
+                        constraints = set(vertex.constraints)
+                        for constraint in constraints:
+                            # if isinstance(constraint, SameChipAsConstraint):
+                            #     vertex.constraints.remove(constraint)
+                            if isinstance(constraint, ChipAndCoreConstraint):
+                                vertex.constraints.remove(constraint)
+                        # parent_drnl_vertex = vertex._mv_list[vertex._parent_index_list[lo_atom][0]]
+                        # vertex.constraints.add(SameChipAsConstraint(parent_drnl_vertex))
+                        next_chip = list(resource_tracker.chips_available - resource_tracker.keys)[0]
+                        vertex.constraints.add(ChipAndCoreConstraint(next_chip[0],next_chip[1]))
 
                 # get max resources available on machine
                 resources = resource_tracker\
