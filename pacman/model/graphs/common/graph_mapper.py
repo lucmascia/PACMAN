@@ -60,7 +60,7 @@ class GraphMapper(object):
             if vertex_slice.hi_atom >= application_vertex._size:
                 raise PacmanValueError(
                 "hi_atom {:d} >= maximum {:d}".format(
-                    vertex_slice.hi_atom, application_vertex.n_atoms))
+                    vertex_slice.hi_atom, application_vertex._size))
         elif vertex_slice.hi_atom >= application_vertex.n_atoms:
             raise PacmanValueError(
                 "hi_atom {:d} >= maximum {:d}".format(

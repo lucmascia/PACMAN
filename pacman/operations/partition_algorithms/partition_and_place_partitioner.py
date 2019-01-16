@@ -226,8 +226,10 @@ class PartitionAndPlacePartitioner(object):
                 graph_mapper.add_vertex_mapping(
                     machine_vertex, vertex_slice, vertex)
 
-                # progress.update(vertex_slice.n_atoms)
-                progress.update(hi_atom-lo_atom)
+                if isinstance(machine_vertex, IHCANVertex):
+                    progress.update(hi_atom-lo_atom)
+                else:
+                    progress.update(vertex_slice.n_atoms)
             if isinstance(vertex,SpiNNakEarVertex):
                 #add all the spinnakear edges and partitions to machine graph from the gloabl "original machine graph"
                 original_machine_graph = globals_variables.get_simulator()._original_machine_graph
