@@ -1,7 +1,7 @@
 from collections import defaultdict
 from spinn_utilities.ordered_set import OrderedSet
 from pacman.exceptions import PacmanValueError
-
+from IHCAN_vertex import IHCANVertex
 
 class GraphMapper(object):
     """ A mapping between an Application Graph and a Machine Graph.
@@ -56,7 +56,12 @@ class GraphMapper(object):
         :raise pacman.exceptions.PacmanValueError:\
             If atom selection is out of bounds.
         """
-        if vertex_slice.hi_atom >= application_vertex.n_atoms:
+        if isinstance(machine_vertex,IHCANVertex):
+            if vertex_slice.hi_atom >= application_vertex._size:
+                raise PacmanValueError(
+                "hi_atom {:d} >= maximum {:d}".format(
+                    vertex_slice.hi_atom, application_vertex.n_atoms))
+        elif vertex_slice.hi_atom >= application_vertex.n_atoms:
             raise PacmanValueError(
                 "hi_atom {:d} >= maximum {:d}".format(
                     vertex_slice.hi_atom, application_vertex.n_atoms))
