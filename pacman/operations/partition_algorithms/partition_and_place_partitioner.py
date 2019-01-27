@@ -227,7 +227,7 @@ class PartitionAndPlacePartitioner(object):
                     machine_vertex, vertex_slice, vertex)
 
                 if isinstance(machine_vertex, IHCANVertex):
-                    progress.update(hi_atom-lo_atom)
+                    progress.update(vertex_slice.hi_atom-vertex_slice.lo_atom)
                 else:
                     progress.update(vertex_slice.n_atoms)
             if isinstance(vertex,SpiNNakEarVertex):
