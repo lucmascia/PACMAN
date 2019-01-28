@@ -1,28 +1,28 @@
 import logging
+
+from spinnak_ear.IHCAN_vertex import IHCANVertex
 from six import raise_from
-from spinn_utilities.progress_bar import ProgressBar
-from pacman.model.abstract_classes import AbstractHasGlobalMaxAtoms
+
 from pacman.exceptions import PacmanPartitionException, PacmanValueError
-from pacman.model.graphs.abstract_virtual_vertex import AbstractVirtualVertex
+from pacman.model.abstract_classes import AbstractHasGlobalMaxAtoms
 from pacman.model.constraints.partitioner_constraints import (
     AbstractPartitionerConstraint, MaxVertexAtomsConstraint,
     FixedVertexAtomsConstraint, SameAtomsAsVertexConstraint)
-from pacman.model.constraints.placer_constraints import SameChipAsConstraint,ChipAndCoreConstraint
+from pacman.model.constraints.placer_constraints import ChipAndCoreConstraint
+from pacman.model.graphs.abstract_virtual_vertex import AbstractVirtualVertex
 from pacman.model.graphs.common import GraphMapper, Slice
 from pacman.model.graphs.machine import MachineGraph
 from pacman.utilities import utility_calls as utils
 from pacman.utilities.algorithm_utilities.partition_algorithm_utilities \
     import (
-        generate_machine_edges, get_same_size_vertex_groups,
-        get_remaining_constraints)
+    generate_machine_edges, get_same_size_vertex_groups,
+    get_remaining_constraints)
 from pacman.utilities.algorithm_utilities.placer_algorithm_utilities import (
     sort_vertices_by_known_constraints)
 from pacman.utilities.utility_objs import ResourceTracker
-
 from spinn_front_end_common.utilities import globals_variables
-
-from spinnakear_vertex import SpiNNakEarVertex
-from IHCAN_vertex import IHCANVertex
+from spinn_utilities.progress_bar import ProgressBar
+from spinnak_ear.spinnakear_vertex import SpiNNakEarVertex
 
 logger = logging.getLogger(__name__)
 

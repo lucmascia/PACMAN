@@ -1,13 +1,14 @@
 """ A collection of methods which support partitioning algorithms.
 """
-from spinn_utilities.progress_bar import ProgressBar
-from spinn_utilities.ordered_set import OrderedSet
+from spinnak_ear.IHCAN_vertex import IHCANVertex
+from spinnak_ear.spinnakear_vertex import SpiNNakEarVertex
+from spinnak_ear.DRNL_vertex import DRNLVertex
+
 from pacman.exceptions import PacmanPartitionException
 from pacman.model.constraints.partitioner_constraints import (
     AbstractPartitionerConstraint, SameAtomsAsVertexConstraint)
-from spinnakear_vertex import SpiNNakEarVertex
-from DRNL_vertex import DRNLVertex
-from IHCAN_vertex import IHCANVertex
+from spinn_utilities.ordered_set import OrderedSet
+from spinn_utilities.progress_bar import ProgressBar
 
 
 def generate_machine_edges(machine_graph, graph_mapper, application_graph):
