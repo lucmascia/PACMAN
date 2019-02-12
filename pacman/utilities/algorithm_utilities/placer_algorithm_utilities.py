@@ -3,7 +3,7 @@ from pacman.model.constraints.placer_constraints import (
     RadialPlacementFromChipConstraint)
 from pacman.model.graphs.common.edge_traffic_type import EdgeTrafficType
 from pacman.utilities import VertexSorter, ConstraintOrder
-
+import sys
 
 def sort_vertices_by_known_constraints(vertices):
     """ Sort vertices to be placed by constraint so that those with\
@@ -12,7 +12,9 @@ def sort_vertices_by_known_constraints(vertices):
     sorter = VertexSorter([
         ConstraintOrder(ChipAndCoreConstraint, 1, ["p"]),
         ConstraintOrder(ChipAndCoreConstraint, 2),
-        ConstraintOrder(SameChipAsConstraint, 3),
+        # ConstraintOrder(SameChipAsConstraint, 3),
+        #HACK to force no reordering for SpiNNak-Ear
+        ConstraintOrder(SameChipAsConstraint, None),
         ConstraintOrder(BoardConstraint, 4),
         ConstraintOrder(RadialPlacementFromChipConstraint, 5)])
     return sorter.sort(vertices)

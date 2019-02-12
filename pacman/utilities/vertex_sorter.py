@@ -2,7 +2,6 @@ from collections import defaultdict
 import sys
 from six import itervalues
 
-
 class ConstraintOrder(object):
     """ A constraint order definition for sorting.
     """
@@ -99,12 +98,11 @@ class VertexSorter(object):
             # Get all the ranks of the constraints
             ranks = [sys.maxsize]
             for c in vertex.constraints:
-
                 # If the constraint is one to sort by
                 if c.__class__ in self._constraints:
                     current_ranks = self._constraints[c.__class__]
                     for (rank, required_param) in current_ranks:
-                        if self._matches(c, required_param):
+                        if self._matches(c, required_param) and rank is not None:
                             ranks.append(rank)
 
             # Sort and store the ranks for overall ordering
