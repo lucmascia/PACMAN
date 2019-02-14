@@ -1,6 +1,6 @@
 from pacman.model.constraints.placer_constraints import (
     ChipAndCoreConstraint, SameChipAsConstraint, BoardConstraint,
-    RadialPlacementFromChipConstraint)
+    RadialPlacementFromChipConstraint,EarConstraint)
 from pacman.model.graphs.common.edge_traffic_type import EdgeTrafficType
 from pacman.utilities import VertexSorter, ConstraintOrder
 import sys
@@ -12,9 +12,9 @@ def sort_vertices_by_known_constraints(vertices):
     sorter = VertexSorter([
         ConstraintOrder(ChipAndCoreConstraint, 1, ["p"]),
         ConstraintOrder(ChipAndCoreConstraint, 2),
-        # ConstraintOrder(SameChipAsConstraint, 3),
+        ConstraintOrder(SameChipAsConstraint, 3),
         #HACK to force no reordering for SpiNNak-Ear
-        ConstraintOrder(SameChipAsConstraint, None),
+        ConstraintOrder(EarConstraint,1),
         ConstraintOrder(BoardConstraint, 4),
         ConstraintOrder(RadialPlacementFromChipConstraint, 5)])
     return sorter.sort(vertices)
