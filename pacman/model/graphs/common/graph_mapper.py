@@ -3,6 +3,7 @@ from collections import defaultdict
 from pacman.exceptions import PacmanValueError
 from spinn_utilities.ordered_set import OrderedSet
 from spinnak_ear.IHCAN_vertex import IHCANVertex
+from spinnak_ear.AN_group_vertex import ANGroupVertex
 
 
 class GraphMapper(object):
@@ -58,7 +59,7 @@ class GraphMapper(object):
         :raise pacman.exceptions.PacmanValueError:\
             If atom selection is out of bounds.
         """
-        if isinstance(machine_vertex,IHCANVertex):
+        if isinstance(machine_vertex,ANGroupVertex):
             if vertex_slice.hi_atom >= application_vertex._size:
                 raise PacmanValueError(
                 "hi_atom {:d} >= maximum {:d}".format(

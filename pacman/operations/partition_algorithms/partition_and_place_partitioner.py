@@ -1,6 +1,7 @@
 import logging
 
 from spinnak_ear.IHCAN_vertex import IHCANVertex
+from spinnak_ear.AN_group_vertex import ANGroupVertex
 from six import raise_from
 
 from pacman.exceptions import PacmanPartitionException, PacmanValueError
@@ -215,19 +216,28 @@ class PartitionAndPlacePartitioner(object):
                     label="{}:{}:{}".format(vertex.label, lo_atom, hi_atom),
                     constraints=get_remaining_constraints(vertex))
 
-                if isinstance(machine_vertex,IHCANVertex):
-                    # create a vertex slice that will contain 2 atoms for every IHCVertex
-                    ihc_ids = [i for i, name in enumerate(vertex._mv_index_list) if name == 'ihc']
-                    mod_lo_atom = ihc_ids.index(lo_atom) * 2
-                    mod_hi_atom = mod_lo_atom + 1
-                    vertex_slice = Slice(mod_lo_atom,mod_hi_atom)
+                # #TODO: not sure if i need this IHC slice now...
+                # if isinstance(machine_vertex,IHCANVertex):
+                #     # create a vertex slice that will contain 2 atoms for every IHCVertex
+                #     ihc_ids = [i for i, name in enumerate(vertex._mv_index_list) if name == 'ihc']
+                #     mod_lo_atom = ihc_ids.index(lo_atom) * 2
+                #     mod_hi_atom = mod_lo_atom + 1
+                #     vertex_slice = Slice(mod_lo_atom,mod_hi_atom)
+
+                if isinstance(machine_vertex,ANGroupVertex):
+                    an_group_ids = [i for i, name in enumerate(vertex._mv_index_list) if name == 'group']
+                    mod_lo_atom = an_group_ids.index(lo_atom) * machine_vertex._max_n_atoms
+                    mod_hi_atom = mod_lo_atom + machine_vertex._n_atoms - 1
+                    vertex_slice = Slice(mod_lo_atom, mod_hi_atom)
+
                 # update objects
                 machine_graph.add_vertex(machine_vertex)
                 graph_mapper.add_vertex_mapping(
                     machine_vertex, vertex_slice, vertex)
 
-                if isinstance(machine_vertex, IHCANVertex):
-                    progress.update(vertex_slice.hi_atom-vertex_slice.lo_atom)
+                if isinstance(machine_vertex, ANGroupVertex):
+                    a=1
+                    #progress.update(vertex_slice.hi_atom-vertex_slice.lo_atom)
                 else:
                     progress.update(vertex_slice.n_atoms)
             if isinstance(vertex,SpiNNakEarVertex):
@@ -346,6 +356,13 @@ class PartitionAndPlacePartitioner(object):
                         # vertex.constraints.add(SameChipAsConstraint(parent_drnl_vertex))
                         next_chip = list(resource_tracker.chips_available - resource_tracker.keys)[0]
                         vertex.constraints.add(ChipAndCoreConstraint(next_chip[0],next_chip[1]))
+                    elif lo_atom > max(vertex._new_chip_indices)+vertex._n_ihc:#covers residual
+                        constraints = set(vertex.constraints)
+                        for constraint in constraints:
+                            # if isinstance(constraint, SameChipAsConstraint):
+                            #     vertex.constraints.remove(constraint)
+                            if isinstance(constraint, ChipAndCoreConstraint):
+                                vertex.constraints.remove(constraint)
 
                 # get max resources available on machine
                 resources = resource_tracker\

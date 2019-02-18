@@ -3,6 +3,7 @@
 from spinnak_ear.IHCAN_vertex import IHCANVertex
 from spinnak_ear.spinnakear_vertex import SpiNNakEarVertex
 from spinnak_ear.DRNL_vertex import DRNLVertex
+from spinnak_ear.AN_group_vertex import ANGroupVertex
 
 from pacman.exceptions import PacmanPartitionException
 from pacman.model.constraints.partitioner_constraints import (
@@ -43,7 +44,7 @@ def generate_machine_edges(machine_graph, graph_mapper, application_graph):
                         application_edge.post_vertex):
                     if (not isinstance(application_edge.post_vertex, SpiNNakEarVertex) \
                         and not isinstance(application_edge.pre_vertex, SpiNNakEarVertex))\
-                        or isinstance(dest_vertex,DRNLVertex) or isinstance(source_vertex,IHCANVertex):
+                        or isinstance(dest_vertex,DRNLVertex) or isinstance(source_vertex,ANGroupVertex):#isinstance(source_vertex,IHCANVertex):
 
                         machine_edge = application_edge.create_machine_edge(
                             source_vertex, dest_vertex,

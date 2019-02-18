@@ -24,32 +24,16 @@ class RadialPlacer(object):
 
         placements = Placements()
         vertices = sort_vertices_by_known_constraints(machine_graph.vertices)
-        machine_width = machine._max_chip_x
-        machine_height =machine._max_chip_y
-        ear_index = 0
-        ome_chips = [(0,0),(machine_width,machine_height)]
-
 
         # Iterate over vertices and generate placements
         progress = ProgressBar(
             machine_graph.n_vertices, "Placing graph vertices")
         resource_tracker = ResourceTracker(
             machine, self._generate_radial_chips(machine))
-        # resource_tracker = ResourceTracker(
-        #     machine, self._generate_ear_radial_chips(machine))
         vertices_on_same_chip = get_same_chip_vertex_groups(machine_graph)
         all_vertices_placed = set()
         for vertex in progress.over(vertices):
             if vertex not in all_vertices_placed:
-                # new_constraint = None
-                # for constraint in vertex.constraints:
-                #     if isinstance(constraint,EarConstraint):
-                #         #hard code placement
-                #         if vertex.label == "OME Node":
-                #             new_constraint = ChipAndCoreConstraint(ome_chips[ear_index][0],ome_chips[ear_index][1])
-                # if new_constraint is not None:
-                #     vertex.add_constraint(new_constraint)
-
                 vertices_placed = self._place_vertex(
                     vertex, resource_tracker, machine, placements,
                     vertices_on_same_chip)
