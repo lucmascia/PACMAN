@@ -24,6 +24,7 @@ from pacman.utilities.utility_objs import ResourceTracker
 from spinn_front_end_common.utilities import globals_variables
 from spinn_utilities.progress_bar import ProgressBar
 from spinnak_ear.spinnakear_vertex import SpiNNakEarVertex
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -216,16 +217,13 @@ class PartitionAndPlacePartitioner(object):
                     label="{}:{}:{}".format(vertex.label, lo_atom, hi_atom),
                     constraints=get_remaining_constraints(vertex))
 
-                # #TODO: not sure if i need this IHC slice now...
-                # if isinstance(machine_vertex,IHCANVertex):
-                #     # create a vertex slice that will contain 2 atoms for every IHCVertex
-                #     ihc_ids = [i for i, name in enumerate(vertex._mv_index_list) if name == 'ihc']
-                #     mod_lo_atom = ihc_ids.index(lo_atom) * 2
-                #     mod_hi_atom = mod_lo_atom + 1
-                #     vertex_slice = Slice(mod_lo_atom,mod_hi_atom)
-
                 if isinstance(machine_vertex,ANGroupVertex):
-                    an_group_ids = [i for i, name in enumerate(vertex._mv_index_list) if name == 'group']
+                    row_index, =  np.where(vertex._max_n_atoms_per_group_tree_row==machine_vertex._max_n_atoms)
+                    row_index=row_index[0]
+                    if machine_vertex._is_final_row is True:
+                        an_group_ids = [i for i, name in enumerate(vertex._mv_index_list) if name == 'group_{}'.format(row_index)]
+                    else:
+                        an_group_ids = [i for i, name in enumerate(vertex._mv_index_list) if name == 'inter_{}'.format(row_index)]
                     mod_lo_atom = an_group_ids.index(lo_atom) * machine_vertex._max_n_atoms
                     mod_hi_atom = mod_lo_atom + machine_vertex._n_atoms - 1
                     vertex_slice = Slice(mod_lo_atom, mod_hi_atom)

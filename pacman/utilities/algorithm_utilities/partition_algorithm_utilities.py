@@ -42,9 +42,11 @@ def generate_machine_edges(machine_graph, graph_mapper, application_graph):
                 # create new partitions
                 for dest_vertex in graph_mapper.get_machine_vertices(
                         application_edge.post_vertex):
+                    #TODO: maybe just check if identifier is SPIKE
                     if (not isinstance(application_edge.post_vertex, SpiNNakEarVertex) \
                         and not isinstance(application_edge.pre_vertex, SpiNNakEarVertex))\
-                        or isinstance(dest_vertex,DRNLVertex) or isinstance(source_vertex,ANGroupVertex):#isinstance(source_vertex,IHCANVertex):
+                        or isinstance(dest_vertex,DRNLVertex) or (isinstance(source_vertex,ANGroupVertex)
+                    and source_vertex._is_final_row == True):#isinstance(source_vertex,IHCANVertex):
 
                         machine_edge = application_edge.create_machine_edge(
                             source_vertex, dest_vertex,
