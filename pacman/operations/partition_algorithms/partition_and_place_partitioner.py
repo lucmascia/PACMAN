@@ -354,7 +354,7 @@ class PartitionAndPlacePartitioner(object):
                         # vertex.constraints.add(SameChipAsConstraint(parent_drnl_vertex))
                         next_chip = list(resource_tracker.chips_available - resource_tracker.keys)[0]
                         vertex.constraints.add(ChipAndCoreConstraint(next_chip[0],next_chip[1]))
-                    elif lo_atom > max(vertex._new_chip_indices)+vertex._n_ihc:#covers residual
+                    elif "inter" in vertex._mv_index_list[lo_atom]:#covers residual
                         constraints = set(vertex.constraints)
                         for constraint in constraints:
                             # if isinstance(constraint, SameChipAsConstraint):
