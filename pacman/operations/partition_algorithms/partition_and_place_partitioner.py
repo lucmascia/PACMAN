@@ -81,8 +81,10 @@ class PartitionAndPlacePartitioner(object):
         vertex_groups = get_same_size_vertex_groups(vertices)
 
         # Partition one vertex at a time
+        ear_count = 0
         for vertex in vertices:
-
+            if isinstance(vertex,SpiNNakEarVertex):
+                ear_count+=1
             # check that the vertex hasn't already been partitioned
             machine_vertices = graph_mapper.get_machine_vertices(vertex)
 
@@ -91,6 +93,16 @@ class PartitionAndPlacePartitioner(object):
                 self._partition_vertex(
                     vertex, machine_graph, graph_mapper, resource_tracker,
                     progress, vertex_groups)
+        if ear_count>0:
+            #add all the spinnakear edges and partitions to machine graph from the global "original machine graph"
+            original_machine_graph = globals_variables.get_simulator()._original_machine_graph
+            for outgoing_partition in \
+                    original_machine_graph.outgoing_edge_partitions:
+                # machine_graph.add_outgoing_edge_partition(outgoing_partition)
+                for edge in outgoing_partition.edges:
+                    machine_graph.add_edge(
+                        edge, outgoing_partition.identifier)
+
         progress.end()
 
         generate_machine_edges(machine_graph, graph_mapper, graph)
@@ -233,20 +245,19 @@ class PartitionAndPlacePartitioner(object):
                 graph_mapper.add_vertex_mapping(
                     machine_vertex, vertex_slice, vertex)
 
-                if isinstance(machine_vertex, ANGroupVertex):
-                    a=1
-                    #progress.update(vertex_slice.hi_atom-vertex_slice.lo_atom)
+                if isinstance(vertex,SpiNNakEarVertex):
+                    progress.update(1)
                 else:
                     progress.update(vertex_slice.n_atoms)
-            if isinstance(vertex,SpiNNakEarVertex):
-                #add all the spinnakear edges and partitions to machine graph from the gloabl "original machine graph"
-                original_machine_graph = globals_variables.get_simulator()._original_machine_graph
-                for outgoing_partition in \
-                        original_machine_graph.outgoing_edge_partitions:
-                    # machine_graph.add_outgoing_edge_partition(outgoing_partition)
-                    for edge in outgoing_partition.edges:
-                        machine_graph.add_edge(
-                            edge, outgoing_partition.identifier)
+            # if isinstance(vertex,SpiNNakEarVertex):
+            #     #add all the spinnakear edges and partitions to machine graph from the global "original machine graph"
+            #     original_machine_graph = globals_variables.get_simulator()._original_machine_graph
+            #     for outgoing_partition in \
+            #             original_machine_graph.outgoing_edge_partitions:
+            #         # machine_graph.add_outgoing_edge_partition(outgoing_partition)
+            #         for edge in outgoing_partition.edges:
+            #             machine_graph.add_edge(
+            #                 edge, outgoing_partition.identifier)
 
     @staticmethod
     def _reallocate_resources(
@@ -340,27 +351,27 @@ class PartitionAndPlacePartitioner(object):
             reverse_ip_tags = None
             if not isinstance(vertex, AbstractVirtualVertex):
 
-                if isinstance(vertex,SpiNNakEarVertex):
-                    # if vertex._mv_index_list[vertex_slice.lo_atom] == "ihc":
-                    if lo_atom in vertex._new_chip_indices:
-                        #first remove any previous chip and core contraints
-                        constraints = set(vertex.constraints)
-                        for constraint in constraints:
-                            # if isinstance(constraint, SameChipAsConstraint):
-                            #     vertex.constraints.remove(constraint)
-                            if isinstance(constraint, ChipAndCoreConstraint):
-                                vertex.constraints.remove(constraint)
-                        # parent_drnl_vertex = vertex._mv_list[vertex._parent_index_list[lo_atom][0]]
-                        # vertex.constraints.add(SameChipAsConstraint(parent_drnl_vertex))
-                        next_chip = list(resource_tracker.chips_available - resource_tracker.keys)[0]
-                        vertex.constraints.add(ChipAndCoreConstraint(next_chip[0],next_chip[1]))
-                    elif "inter" in vertex._mv_index_list[lo_atom]:#covers residual
-                        constraints = set(vertex.constraints)
-                        for constraint in constraints:
-                            # if isinstance(constraint, SameChipAsConstraint):
-                            #     vertex.constraints.remove(constraint)
-                            if isinstance(constraint, ChipAndCoreConstraint):
-                                vertex.constraints.remove(constraint)
+                # if isinstance(vertex,SpiNNakEarVertex):
+                #     # if vertex._mv_index_list[vertex_slice.lo_atom] == "ihc":
+                #     if lo_atom in vertex._new_chip_indices:
+                #         #first remove any previous chip and core contraints
+                #         constraints = set(vertex.constraints)
+                #         for constraint in constraints:
+                #             # if isinstance(constraint, SameChipAsConstraint):
+                #             #     vertex.constraints.remove(constraint)
+                #             if isinstance(constraint, ChipAndCoreConstraint):
+                #                 vertex.constraints.remove(constraint)
+                #         # parent_drnl_vertex = vertex._mv_list[vertex._parent_index_list[lo_atom][0]]
+                #         # vertex.constraints.add(SameChipAsConstraint(parent_drnl_vertex))
+                #         next_chip = list(resource_tracker.chips_available - resource_tracker.keys)[0]
+                #         vertex.constraints.add(ChipAndCoreConstraint(next_chip[0],next_chip[1]))
+                #     elif "inter" in vertex._mv_index_list[lo_atom]:#covers residual
+                #         constraints = set(vertex.constraints)
+                #         for constraint in constraints:
+                #             # if isinstance(constraint, SameChipAsConstraint):
+                #             #     vertex.constraints.remove(constraint)
+                #             if isinstance(constraint, ChipAndCoreConstraint):
+                #                 vertex.constraints.remove(constraint)
 
                 # get max resources available on machine
                 resources = resource_tracker\
