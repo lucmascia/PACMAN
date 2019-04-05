@@ -281,20 +281,21 @@ class PACMANAlgorithmExecutor(object):
                         alg_outputs.discard(matching)
                 all_outputs.update(alg_outputs)
 
-        # Set up the token tracking and make all specified tokens complete
-        token_states = TokenStates()
-        for token_name in tokens:
-            token = Token(token_name)
-            token_states.track_token(token)
-            token_states.process_output_token(token)
-
         # Go through the algorithms and add in the tokens that can be completed
         # by any of the algorithms
+        token_states = TokenStates()
         for algorithms in (algorithm_data, optional_algorithm_data):
             for algorithm in algorithms:
                 for token in algorithm.generated_output_tokens:
-                    if not token_states.is_token_complete(token):
-                        token_states.track_token(token)
+                    token_states.track_token(token)
+
+        # Set up the token tracking and make all specified tokens complete
+        for token_name in tokens:
+            token = token_name
+            if not isinstance(token_name, Token):
+                token = Token(token_name)
+            token_states.track_token(token)
+            token_states.process_output_token(token)
 
         # Go through the algorithms and add a fake token for any algorithm that
         # requires an optional token that can't be provided and a fake input

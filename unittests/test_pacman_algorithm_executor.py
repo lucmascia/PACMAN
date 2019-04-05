@@ -200,6 +200,24 @@ class Test(unittest.TestCase):
         self.assertFalse(TestPartTokenOutput2.called)
         self.assertTrue(TestWholeTokenRequired.called)
 
+    def test_optional_token_workflow_not_needed_2(self):
+        """ Tests that a workflow with tokens works with optional algorithms\
+            that are not needed
+        """
+        TestPartTokenOutput1.called = False
+        TestPartTokenOutput2.called = False
+        TestWholeTokenRequired.called = False
+        executor = PACMANAlgorithmExecutor(
+            algorithms=["TestWholeTokenRequired"],
+            optional_algorithms=[
+                "TestPartTokenOutput2", "TestPartTokenOutput1"],
+            inputs={}, required_outputs=[],
+            tokens=[Token("Test", "Part1")], required_output_tokens=[])
+        executor.execute_mapping()
+        self.assertFalse(TestPartTokenOutput1.called)
+        self.assertTrue(TestPartTokenOutput2.called)
+        self.assertTrue(TestWholeTokenRequired.called)
+
     def test_optional_token_workflow(self):
         """ Tests that a workflow with tokens works with optional tokens
         """
