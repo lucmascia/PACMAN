@@ -1,6 +1,5 @@
 import logging
 
-from spinnak_ear.IHCAN_vertex import IHCANVertex
 from spinnak_ear.AN_group_vertex import ANGroupVertex
 from six import raise_from
 
@@ -249,15 +248,6 @@ class PartitionAndPlacePartitioner(object):
                     progress.update(1)
                 else:
                     progress.update(vertex_slice.n_atoms)
-            # if isinstance(vertex,SpiNNakEarVertex):
-            #     #add all the spinnakear edges and partitions to machine graph from the global "original machine graph"
-            #     original_machine_graph = globals_variables.get_simulator()._original_machine_graph
-            #     for outgoing_partition in \
-            #             original_machine_graph.outgoing_edge_partitions:
-            #         # machine_graph.add_outgoing_edge_partition(outgoing_partition)
-            #         for edge in outgoing_partition.edges:
-            #             machine_graph.add_edge(
-            #                 edge, outgoing_partition.identifier)
 
     @staticmethod
     def _reallocate_resources(
