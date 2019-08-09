@@ -1,18 +1,26 @@
-from spinn_utilities.progress_bar import ProgressBar, DummyProgressBar
+# Copyright (c) 2017-2019 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# pacman imports
-from pacman.exceptions import PacmanRoutingException
-from pacman.model.graphs.common import EdgeTrafficType
-from pacman.model.routing_table_by_partition import \
-    MulticastRoutingTableByPartition, MulticastRoutingTableByPartitionEntry
-
-# general imports
-try:
-    import itertools.izip as zip  # @ReservedAssignment
-except ImportError:
-    pass
 import logging
 import sys
+from six.moves import zip
+from spinn_utilities.progress_bar import ProgressBar, DummyProgressBar
+from pacman.exceptions import PacmanRoutingException
+from pacman.model.graphs.common import EdgeTrafficType
+from pacman.model.routing_table_by_partition import (
+    MulticastRoutingTableByPartition, MulticastRoutingTableByPartitionEntry)
 
 logger = logging.getLogger(__name__)
 infinity = float("inf")

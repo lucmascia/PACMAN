@@ -1,25 +1,40 @@
+# Copyright (c) 2017-2019 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 """ Collection of functions which together validate routes.
 """
-
-from collections import namedtuple
+try:
+    from collections.abc import namedtuple
+except ImportError:
+    from collections import namedtuple
 import logging
-
-from pacman.exceptions import PacmanRoutingException
-from spinn_utilities.log import FormatAdapter
-from pacman.model.constraints.key_allocator_constraints \
-    import ContiguousKeyRangeContraint
-from pacman.model.graphs.common import EdgeTrafficType
 from spinn_utilities.ordered_set import OrderedSet
 from spinn_utilities.progress_bar import ProgressBar
+from spinn_utilities.log import FormatAdapter
+from pacman.exceptions import PacmanRoutingException
+from pacman.model.constraints.key_allocator_constraints import (
+    ContiguousKeyRangeContraint)
+from pacman.model.graphs.common import EdgeTrafficType
 from pacman.utilities import utility_calls
 
 logger = FormatAdapter(logging.getLogger(__name__))
+_32_BITS = 0xFFFFFFFF
+range_masks = {_32_BITS - ((2 ** i) - 1) for i in range(33)}
 
 # Define an internal class for placements
 PlacementTuple = namedtuple('PlacementTuple', 'x y p')
-
-_32_BITS = 0xFFFFFFFF
-range_masks = {_32_BITS - ((2 ** i) - 1) for i in range(33)}
 
 
 def validate_routes(machine_graph, placements, routing_infos,

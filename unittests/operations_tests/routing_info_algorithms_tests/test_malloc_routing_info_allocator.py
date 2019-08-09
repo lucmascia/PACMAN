@@ -1,19 +1,32 @@
+# Copyright (c) 2017-2019 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 from __future__ import print_function
 import unittest
-
 from pacman.exceptions import PacmanRouteInfoAllocationException
-from pacman.model.constraints.key_allocator_constraints import \
-    FixedKeyAndMaskConstraint
-from pacman.model.constraints.key_allocator_constraints.\
-    share_key_constraint import ShareKeyConstraint
-from pacman.model.graphs.machine import MachineGraph, SimpleMachineVertex, \
-    MachineEdge
+from pacman.model.constraints.key_allocator_constraints import (
+    FixedKeyAndMaskConstraint, ShareKeyConstraint)
+from pacman.model.graphs.machine import (
+    MachineGraph, SimpleMachineVertex, MachineEdge)
 from pacman.model.resources import ResourceContainer
 from pacman.operations.routing_info_allocator_algorithms\
     .malloc_based_routing_allocator.malloc_based_routing_info_allocator\
-    import MallocBasedRoutingInfoAllocator
-from pacman.model.routing_info import BaseKeyAndMask, \
-    DictBasedMachinePartitionNKeysMap
+    import (
+        MallocBasedRoutingInfoAllocator)
+from pacman.model.routing_info import (
+    BaseKeyAndMask, DictBasedMachinePartitionNKeysMap)
 
 
 class MyTestCase(unittest.TestCase):

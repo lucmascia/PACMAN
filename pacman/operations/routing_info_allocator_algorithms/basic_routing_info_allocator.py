@@ -1,12 +1,26 @@
-from spinn_utilities.progress_bar import ProgressBar
+# Copyright (c) 2017-2019 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# pacman imports
-from pacman.model.routing_info \
-    import RoutingInfo, PartitionRoutingInfo, BaseKeyAndMask
-from pacman.utilities import utility_calls
+from spinn_utilities.progress_bar import ProgressBar
+from pacman.model.routing_info import (
+    RoutingInfo, PartitionRoutingInfo, BaseKeyAndMask)
+from pacman.utilities.utility_calls import (
+    check_algorithm_can_support_constraints)
 from pacman.exceptions import PacmanRouteInfoAllocationException
-from pacman.model.constraints.key_allocator_constraints\
-    import AbstractKeyAllocatorConstraint, ContiguousKeyRangeContraint
+from pacman.model.constraints.key_allocator_constraints import (
+    AbstractKeyAllocatorConstraint, ContiguousKeyRangeContraint)
 
 MAX_KEYS_SUPPORTED = 2048
 MASK = 0xFFFFF800
@@ -48,11 +62,9 @@ class BasicRoutingInfoAllocator(object):
 
         # check that this algorithm supports the constraints put onto the
         # partitions
-        supported_constraints = [
-            ContiguousKeyRangeContraint]
-        utility_calls.check_algorithm_can_support_constraints(
+        check_algorithm_can_support_constraints(
             constrained_vertices=machine_graph.outgoing_edge_partitions,
-            supported_constraints=supported_constraints,
+            supported_constraints=[ContiguousKeyRangeContraint],
             abstract_constraint_type=AbstractKeyAllocatorConstraint)
 
         # take each edge and create keys from its placement

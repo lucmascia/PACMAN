@@ -1,8 +1,22 @@
-from pacman.exceptions import PacmanInvalidParameterException
-from pacman.exceptions import PacmanValueError
+# Copyright (c) 2017-2019 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import hashlib
 import numpy
+from pacman.exceptions import (
+    PacmanInvalidParameterException, PacmanValueError)
 
 
 def locate_constraints_of_type(constraints, constraint_type):
@@ -100,7 +114,7 @@ def expand_to_bit_array(value):
 
     :param value: The value to expand
     :type value: int
-    :rtype: [uint8]
+    :rtype: numpy.array(uint8)
     """
     return numpy.unpackbits(
         numpy.asarray([value], dtype=">u4").view(dtype="uint8"))
@@ -111,7 +125,7 @@ def compress_from_bit_array(bit_array):
         into a 32-bit value
 
     :param bit_array: The array to compress
-    :type bit_array: [uint8]
+    :type bit_array: numpy.array(uint8)
     :rtype: int
     """
     return numpy.packbits(bit_array).view(dtype=">u4")[0].item()
@@ -122,10 +136,10 @@ def compress_bits_from_bit_array(bit_array, bit_positions):
         where is a 1 or 0, into a 32-bit value.
 
     :param bit_array: The array to extract the value from
-    :type bit_array: [uint8]
+    :type bit_array: numpy.array(uint8)
     :param bit_positions: The positions of the bits to extract, each value\
         being between 0 and 31
-    :type bit_positions: [int]
+    :type bit_positions: numpy.array(int)
     :rtype: int
     """
     expanded_value = numpy.zeros(32, dtype="uint8")

@@ -1,13 +1,28 @@
-from pacman.model.graphs import AbstractVirtualVertex
-from pacman.model.constraints.placer_constraints\
-    import ChipAndCoreConstraint, AbstractPlacerConstraint
-from pacman.exceptions import PacmanConfigurationException
-from pacman.utilities import utility_calls, file_format_schemas
-from pacman.utilities.constants import EDGES
-from pacman.utilities.utility_calls import ident
-from spinn_utilities.progress_bar import ProgressBar
+# Copyright (c) 2017-2019 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import json
+from spinn_utilities.progress_bar import ProgressBar
+from spinn_machine import Router
+from pacman.model.graphs import AbstractVirtualVertex
+from pacman.model.constraints.placer_constraints import (
+    ChipAndCoreConstraint, AbstractPlacerConstraint)
+from pacman.exceptions import PacmanConfigurationException
+from pacman.utilities import file_format_schemas
+from pacman.utilities.constants import EDGES
+from pacman.utilities.utility_calls import ident, locate_constraints_of_type
 
 
 class CreateConstraintsToFile(object):
@@ -79,7 +94,7 @@ class CreateConstraintsToFile(object):
         :param machine:
         """
         # locate the chip from the placement constraint
-        placement_constraints = utility_calls.locate_constraints_of_type(
+        placement_constraints = locate_constraints_of_type(
             vertex.constraints, ChipAndCoreConstraint)
         routers = (
             machine.get_chip_at(constraint.x, constraint.y).router
@@ -93,7 +108,7 @@ class CreateConstraintsToFile(object):
                 "Can't find the real chip this virtual chip is connected to."
                 "Please fix and try again.")
         return ([link.destination_x, link.destination_y],
-                link.multicast_default_from)
+                Router.opposite(link.source_link_id))
 
     @staticmethod
     def _handle_vertex_constraint(constraint, json_obj, vertex, vertex_id):

@@ -1,15 +1,28 @@
+# Copyright (c) 2017-2019 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 import unittest
-
-from pacman.model.graphs.application \
-    import ApplicationVertex, ApplicationGraph, ApplicationEdge
-from pacman.model.graphs.machine \
-    import MachineEdge, MachineGraph, SimpleMachineVertex
-
+from spinn_machine import virtual_machine
+from pacman.model.graphs.application import (
+    ApplicationVertex, ApplicationGraph, ApplicationEdge)
+from pacman.model.graphs.machine import (
+    MachineEdge, MachineGraph, SimpleMachineVertex)
 from pacman.model.placements import Placement, Placements
 from pacman.model.routing_info import PartitionRoutingInfo, RoutingInfo
 from pacman.operations.router_algorithms import BasicDijkstraRouting
 from pacman.utilities.constants import DEFAULT_MASK
-from spinn_machine import VirtualMachine
 
 
 class Vertex(ApplicationVertex):
@@ -63,7 +76,7 @@ class TestRouter(unittest.TestCase):
             key=2 << 11, mask=DEFAULT_MASK, edge=self.edge)
         self.routing_info.add_partition_info(self.edge_routing_info1)
         # create machine
-        self.machine = VirtualMachine(10, 10, False)
+        self.machine = virtual_machine(10, 10, False)
         self.routing = BasicDijkstraRouting()
         self.routing.route(
             machine=self.machine, placements=self.placements,
@@ -84,7 +97,7 @@ class TestRouter(unittest.TestCase):
             key=2 << 11, mask=DEFAULT_MASK, edge=self.edge)
         self.routing_info.add_partition_info(self.edge_routing_info1)
         # create machine
-        self.machine = VirtualMachine(10, 10, False)
+        self.machine = virtual_machine(10, 10, False)
         self.routing = BasicDijkstraRouting()
         self.routing.route(
             machine=self.machine, placements=self.placements,
@@ -105,7 +118,7 @@ class TestRouter(unittest.TestCase):
             key=2 << 11, mask=DEFAULT_MASK, edge=self.edge)
         self.routing_info.add_partition_info(self.edge_routing_info1)
         # create machine
-        self.machine = VirtualMachine(10, 10, False)
+        self.machine = virtual_machine(10, 10, False)
         self.routing = BasicDijkstraRouting()
         self.routing.route(
             machine=self.machine, placements=self.placements,
@@ -125,7 +138,7 @@ class TestRouter(unittest.TestCase):
             key=2 << 11, mask=DEFAULT_MASK, edge=self.edge)
         self.routing_info.add_partition_info(self.edge_routing_info1)
         # create machine
-        self.machine = VirtualMachine(10, 10, False)
+        self.machine = virtual_machine(10, 10, False)
         self.routing = BasicDijkstraRouting()
         self.routing.route(
             machine=self.machine, placements=self.placements,
@@ -145,7 +158,7 @@ class TestRouter(unittest.TestCase):
             key=2 << 11, mask=DEFAULT_MASK, edge=self.edge)
         self.routing_info.add_partition_info(self.edge_routing_info1)
         # create machine
-        self.machine = VirtualMachine(10, 10, False)
+        self.machine = virtual_machine(10, 10, False)
         self.routing = BasicDijkstraRouting()
         self.routing.route(
             machine=self.machine, placements=self.placements,
@@ -165,7 +178,7 @@ class TestRouter(unittest.TestCase):
             key=2 << 11, mask=DEFAULT_MASK, edge=self.edge)
         self.routing_info.add_partition_info(self.edge_routing_info1)
         # create machine
-        self.machine = VirtualMachine(10, 10, False)
+        self.machine = virtual_machine(10, 10, False)
         self.routing = BasicDijkstraRouting()
         self.routing.route(
             machine=self.machine, placements=self.placements,
@@ -185,7 +198,7 @@ class TestRouter(unittest.TestCase):
             key=2 << 11, mask=DEFAULT_MASK, edge=self.edge)
         self.routing_info.add_partition_info(self.edge_routing_info1)
         # create machine
-        self.machine = VirtualMachine(10, 10, False)
+        self.machine = virtual_machine(10, 10, False)
         self.routing = BasicDijkstraRouting()
         self.routing.route(
             machine=self.machine, placements=self.placements,
@@ -205,7 +218,7 @@ class TestRouter(unittest.TestCase):
             key=2 << 11, mask=DEFAULT_MASK, edge=self.edge)
         self.routing_info.add_partition_info(self.edge_routing_info1)
         # create machine
-        self.machine = VirtualMachine(10, 10, False)
+        self.machine = virtual_machine(10, 10, False)
         self.routing = BasicDijkstraRouting()
         self.routing.route(
             machine=self.machine, placements=self.placements,
@@ -226,7 +239,7 @@ class TestRouter(unittest.TestCase):
             key=2 << 11, mask=DEFAULT_MASK, edge=self.edge)
         self.routing_info.add_partition_info(self.edge_routing_info1)
         # create machine
-        self.machine = VirtualMachine(10, 10, False)
+        self.machine = virtual_machine(10, 10, False)
         self.routing = BasicDijkstraRouting()
         self.routing.route(
             machine=self.machine, placements=self.placements,
@@ -247,7 +260,7 @@ class TestRouter(unittest.TestCase):
             key=2 << 11, mask=DEFAULT_MASK, edge=self.edge)
         self.routing_info.add_partition_info(self.edge_routing_info1)
         # create machine
-        self.machine = VirtualMachine(10, 10, False)
+        self.machine = virtual_machine(10, 10, False)
         self.routing = BasicDijkstraRouting()
         self.routing.route(
             machine=self.machine, placements=self.placements,
@@ -290,7 +303,7 @@ class TestRouter(unittest.TestCase):
             key=2 << 11, mask=DEFAULT_MASK, edge=self.edge)
         self.routing_info.add_partition_info(self.edge_routing_info1)
         # create machine
-        self.machine = VirtualMachine(10, 10, False)
+        self.machine = virtual_machine(10, 10, False)
         self.routing = BasicDijkstraRouting()
         self.routing.route(
             machine=self.machine, placements=self.placements,

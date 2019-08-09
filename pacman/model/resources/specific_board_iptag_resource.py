@@ -1,3 +1,19 @@
+# Copyright (c) 2017-2019 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
 class SpecificBoardTagResource(object):
     """ A resource that allocates a tag on a specific board before the class\
         needing it has been built.
@@ -106,6 +122,9 @@ class SpecificBoardTagResource(object):
         return self._board
 
     def get_value(self):
+        """
+        :return: A description of the specific board's IP tag required.
+        """
         return [
             self._board, self._ip_address, self._port, self._strip_sdp,
             self._tag, self._traffic_identifier]

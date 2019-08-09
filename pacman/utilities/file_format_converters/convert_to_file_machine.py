@@ -1,10 +1,26 @@
-from pacman.utilities import constants
-from pacman.utilities import file_format_schemas
-from spinn_utilities.progress_bar import ProgressBar
-
-from collections import defaultdict
+# Copyright (c) 2017-2019 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import json
+try:
+    from collections.abc import defaultdict
+except ImportError:
+    from collections import defaultdict
+from spinn_utilities.progress_bar import ProgressBar
+from pacman.utilities.constants import EDGES
+from pacman.utilities import file_format_schemas
 
 CHIP_HOMOGENEOUS_CORES = 18
 CHIP_HOMOGENEOUS_SDRAM = 119275520
@@ -76,7 +92,7 @@ class ConvertToFileMachine(object):
         for link_id in range(0, ROUTER_MAX_NUMBER_OF_LINKS):
             if not chip.router.is_link(link_id):
                 json_obj['dead_links'].append(
-                    [x, y, "{}".format(constants.EDGES(link_id).name.lower())])
+                    [x, y, "{}".format(EDGES(link_id).name.lower())])
 
         # locate number of monitor cores and determine
         num_monitors = self._locate_no_monitors(chip)

@@ -1,13 +1,25 @@
-from spinn_utilities.progress_bar import ProgressBar
+# Copyright (c) 2017-2019 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# pacman imports
-from pacman.utilities.algorithm_utilities.placer_algorithm_utilities \
-    import sort_vertices_by_known_constraints
+import logging
+from spinn_utilities.progress_bar import ProgressBar
+from pacman.utilities.algorithm_utilities.placer_algorithm_utilities import (
+    sort_vertices_by_known_constraints)
 from pacman.model.placements import Placement, Placements
 from pacman.utilities.utility_objs import ResourceTracker
 
-# general imports
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -18,12 +30,18 @@ class BasicPlacer(object):
 
     __slots__ = []
 
-    def __call__(self, machine_graph, machine):
+    def __call__(self, machine_graph, machine, plan_n_timesteps):
         """ Place a machine_graph so that each vertex is placed on a core
 
         :param machine_graph: The machine_graph to place
         :type machine_graph:\
             :py:class:`pacman.model.graphs.machine.MachineGraph`
+        :param machine:\
+            The machine with respect to which to partition the application\
+            graph
+        :type machine: :py:class:`spinn_machine.Machine`
+        :param plan_n_timesteps: number of timesteps to plan for
+        :type  plan_n_timesteps: int
         :return: A set of placements
         :rtype: :py:class:`pacman.model.placements.Placements`
         :raise pacman.exceptions.PacmanPlaceException: \
@@ -38,7 +56,7 @@ class BasicPlacer(object):
 
         # Iterate over vertices and generate placements
         progress = ProgressBar(vertices, "Placing graph vertices")
-        resource_tracker = ResourceTracker(machine)
+        resource_tracker = ResourceTracker(machine, plan_n_timesteps)
         for vertex in progress.over(vertices):
             # Create and store a new placement anywhere on the board
             (x, y, p, _, _) = resource_tracker.allocate_constrained_resources(

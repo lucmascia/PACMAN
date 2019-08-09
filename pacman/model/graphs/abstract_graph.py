@@ -1,7 +1,21 @@
-from six import add_metaclass
+# Copyright (c) 2017-2019 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from spinn_utilities.abstract_base import \
-    AbstractBase, abstractmethod, abstractproperty
+from six import add_metaclass
+from spinn_utilities.abstract_base import (
+    AbstractBase, abstractmethod, abstractproperty)
 
 
 @add_metaclass(AbstractBase)
@@ -154,6 +168,16 @@ class AbstractGraph(object):
         :param vertex: The vertex at which the edges to get start
         :type vertex: :py:class:`pacman.model.graphs.AbstractVertex`
         :rtype: iterable(:py:class:`pacman.model.graphs.AbstractEdge`)
+        """
+
+    @abstractmethod
+    def get_outgoing_partition_for_edge(self, edge):
+        """ gets the outgoing partition this edge is associated with.
+
+        :param edge: the edge to find associated partition
+        :type edge: :py:class:`pacman.model.graphs.AbstractEdge`
+        :return: the outgoing partition
+        :rtype: :py:class:`pacman.model.graphs.AbstractOutgoingEdgePartition`
         """
 
     @abstractmethod

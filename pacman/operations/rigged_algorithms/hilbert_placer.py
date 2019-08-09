@@ -1,17 +1,26 @@
-# pacman imports
+# Copyright (c) 2017-2019 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import logging
+from spinn_utilities.progress_bar import ProgressBar
 from pacman.model.constraints.placer_constraints import SameChipAsConstraint
-from pacman.utilities.algorithm_utilities.placer_algorithm_utilities import \
-    get_same_chip_vertex_groups, sort_vertices_by_known_constraints
+from pacman.utilities.algorithm_utilities.placer_algorithm_utilities import (
+    get_same_chip_vertex_groups, sort_vertices_by_known_constraints)
 from pacman.model.placements import Placement, Placements
 from pacman.utilities.utility_objs import ResourceTracker
 from pacman.operations.rigged_algorithms.hilbert_state import HilbertState
-
-# spinn_utils imports
-from spinn_utilities.progress_bar import ProgressBar
-
-# general imports
-from math import log, ceil
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +30,7 @@ class HilbertPlacer(object):
         translated from RIG.
     """
 
-    def __call__(self, machine_graph, machine):
+    def __call__(self, machine_graph, machine, plan_n_timesteps):
         """ Place each vertex in a machine graph on a core in the machine.
 
         :param machine_graph: The machine_graph to place
@@ -29,6 +38,8 @@ class HilbertPlacer(object):
             :py:class:`pacman.model.graphs.machine.MachineGraph`
         :param machine: A SpiNNaker machine object.
         :type machine: :py:class:`spinn_machine.Machine`
+        :param plan_n_timesteps: number of timesteps to plan for
+        :type  plan_n_timesteps: int
         :return placements: Placements of vertices on the machine
         :rtype :py:class:`pacman.model.placements.Placements`
         """
@@ -46,11 +57,10 @@ class HilbertPlacer(object):
         progress = ProgressBar(
             machine_graph.n_vertices, "Placing graph vertices")
         resource_tracker = ResourceTracker(
-            machine, self._generate_hilbert_chips(machine))
+            machine, plan_n_timesteps, self._generate_hilbert_chips(machine))
 
         # get vertices which must be placed on the same chip
-        vertices_on_same_chip = \
-            get_same_chip_vertex_groups(machine_graph.vertices)
+        vertices_on_same_chip = get_same_chip_vertex_groups(machine_graph)
 
         # iterate over vertices and generate placements
         all_vertices_placed = set()
@@ -95,10 +105,7 @@ class HilbertPlacer(object):
 
         # set size of curve based on number of chips on machine
         max_dimen = max(machine.max_chip_x, machine.max_chip_y)
-        if max_dimen >= 1:
-            hilbert_levels = int(ceil(log(max_dimen, 2.0)))
-        else:
-            hilbert_levels = 0
+        hilbert_levels = (max_dimen.bit_length() if max_dimen >= 1 else 0)
 
         for x, y in self._hilbert_curve(hilbert_levels):
             if machine.is_chip_at(x, y):

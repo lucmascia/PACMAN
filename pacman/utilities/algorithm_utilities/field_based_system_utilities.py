@@ -1,17 +1,26 @@
-from pacman.model.constraints.key_allocator_constraints\
-    import ContiguousKeyRangeContraint, FixedKeyFieldConstraint
-from pacman.model.constraints.key_allocator_constraints\
-    import FixedKeyAndMaskConstraint, FixedMaskConstraint
-from pacman.model.constraints.key_allocator_constraints\
-    import FlexiKeyFieldConstraint
-from pacman import exceptions
+# Copyright (c) 2017-2019 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# the different types of field that this system supports
+from enum import Enum
+from pacman.model.constraints.key_allocator_constraints import (
+    ContiguousKeyRangeContraint, FixedKeyFieldConstraint,
+    FixedKeyAndMaskConstraint, FixedMaskConstraint, FlexiKeyFieldConstraint)
+from pacman.exceptions import PacmanConfigurationException
 from pacman.utilities import utility_calls
 from pacman.utilities.utility_objs import Field
 from pacman.utilities.utility_objs.flexi_field import SUPPORTED_TAGS
-
-from enum import Enum
 
 TYPES_OF_FIELDS = Enum(
     value="TYPES_OF_FIELDS",
@@ -67,7 +76,6 @@ def deduce_types(graph):
 
 def handle_flexi_field(constraint, seen_fields, known_fields):
     """
-
     :param constraint:
     :param seen_fields:
     :param known_fields:
@@ -86,7 +94,7 @@ def handle_flexi_field(constraint, seen_fields, known_fields):
 
         # seen the field before but not at this level. error
         if found_field is None and constraint_field in known_fields:
-            raise exceptions.PacmanConfigurationException(
+            raise PacmanConfigurationException(
                 "Can't find the field {} in the expected position".format(
                     constraint_field))
 
@@ -115,7 +123,6 @@ def handle_flexi_field(constraint, seen_fields, known_fields):
 
 def convert_mask_into_fields(entity):
     """
-
     :param entity:
     """
     results = list()
