@@ -1,5 +1,24 @@
-from collections import defaultdict, OrderedDict
+# Copyright (c) 2017-2019 The University of Manchester
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+try:
+    from collections.abc import OrderedDict
+except ImportError:
+    from collections import OrderedDict
 from spinn_utilities.overrides import overrides
+from spinn_utilities.ordered_default_dict import DefaultOrderedDict
 from spinn_utilities.ordered_set import OrderedSet
 from pacman.exceptions import (
     PacmanAlreadyExistsException, PacmanInvalidParameterException)
@@ -33,6 +52,8 @@ class Graph(ConstrainedObject, AbstractGraph):
         "_incoming_edges_by_partition_name",
         # The outgoing edge partitions by pre-vertex
         "_outgoing_edge_partitions_by_pre_vertex",
+        # the outgoing partitions by edge
+        "_outgoing_edge_partition_by_edge",
         # The label of the graph
         "_label"]
 
@@ -54,10 +75,12 @@ class Graph(ConstrainedObject, AbstractGraph):
 
         self._vertices = OrderedSet()
         self._outgoing_edge_partitions_by_name = OrderedDict()
-        self._outgoing_edges = defaultdict(OrderedSet)
-        self._incoming_edges = defaultdict(OrderedSet)
-        self._incoming_edges_by_partition_name = defaultdict(list)
-        self._outgoing_edge_partitions_by_pre_vertex = defaultdict(OrderedSet)
+        self._outgoing_edges = DefaultOrderedDict(OrderedSet)
+        self._incoming_edges = DefaultOrderedDict(OrderedSet)
+        self._incoming_edges_by_partition_name = DefaultOrderedDict(list)
+        self._outgoing_edge_partitions_by_pre_vertex = \
+            DefaultOrderedDict(OrderedSet)
+        self._outgoing_edge_partition_by_edge = OrderedDict()
         self._label = label
 
     @property
@@ -110,6 +133,7 @@ class Graph(ConstrainedObject, AbstractGraph):
         self._incoming_edges_by_partition_name[
             (edge.post_vertex, outgoing_edge_partition_name)].append(edge)
         self._incoming_edges[edge.post_vertex].add(edge)
+        self._outgoing_edge_partition_by_edge[edge] = partition
 
     @overrides(AbstractGraph.add_outgoing_edge_partition)
     def add_outgoing_edge_partition(self, outgoing_edge_partition):
@@ -164,6 +188,10 @@ class Graph(ConstrainedObject, AbstractGraph):
     @overrides(AbstractGraph.n_outgoing_edge_partitions)
     def n_outgoing_edge_partitions(self):
         return len(self._outgoing_edge_partitions_by_name)
+
+    @overrides(AbstractGraph.get_outgoing_partition_for_edge)
+    def get_outgoing_partition_for_edge(self, edge):
+        return self._outgoing_edge_partition_by_edge[edge]
 
     @overrides(AbstractGraph.get_edges_starting_at_vertex)
     def get_edges_starting_at_vertex(self, vertex):
