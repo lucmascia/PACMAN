@@ -266,12 +266,12 @@ class BasicDijkstraRouting(object):
 
             # Set the next activated node as the deactivated node with the
             # lowest current cost
-            current = self._minimum(tables)
+            current = self._minimum(tables, dest_chips_to_find, source)
             tables[current].activated = True
             dest_chips_to_find.discard(current)
 
     @staticmethod
-    def _minimum(tables):
+    def _minimum(tables, dest_chips_to_find, source):
         # This is the lowest cost across ALL deactivated nodes in the graph.
         lowest_cost = sys.maxsize
         lowest = None
@@ -288,7 +288,8 @@ class BasicDijkstraRouting(object):
         # was not reached this iteration, raise an exception
         if lowest is None:
             raise PacmanRoutingException(
-                "Destination could not be activated, ending run")
+                "Destinations {} could not be activated from {}, ending run".format(
+                    dest_chips_to_find, source))
 
         return int(lowest[0]), int(lowest[1])
 

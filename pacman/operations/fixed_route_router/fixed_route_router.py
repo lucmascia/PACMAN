@@ -169,8 +169,14 @@ class FixedRouteRouter(object):
                 self.FAKE_ROUTING_PARTITION)
 
         # route as if using multicast
-        routing_tables_by_partition = self.__dijkstra_route(
-            fake_machine, graph, fake_placements)
+        try:
+            routing_tables_by_partition = self.__dijkstra_route(
+                fake_machine, graph, fake_placements)
+        except Exception as e:
+            import traceback
+            print("Error routing on board {}, {} ({})".format(
+                ethernet_chip.x, ethernet_chip.y, ethernet_chip.ip_address))
+            traceback.print_exc()
 
         # convert to fixed route entries
         for (chip_x, chip_y) in routing_tables_by_partition.get_routers():
