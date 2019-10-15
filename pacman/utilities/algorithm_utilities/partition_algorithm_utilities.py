@@ -26,6 +26,41 @@ from pacman.model.constraints.partitioner_constraints import (
     AbstractPartitionerConstraint, SameAtomsAsVertexConstraint)
 
 
+def _get_source_vertexes(app_vertex, graph_mapper):
+    return graph_mapper.get_machine_vertices(app_vertex)
+
+
+def _get_destination_vertexes(app_vertex, graph_mapper):
+    return graph_mapper.get_machine_vertices(app_vertex)
+
+
+def _process_edge(
+        application_edge, machine_graph, graph_mapper,
+        application_partition):
+    sources = _get_source_vertexes(
+        application_edge.pre_vertex, graph_mapper)
+    destinations = _get_destination_vertexes(
+        application_edge.post_vertex, graph_mapper)
+    for source_vertex in sources:
+        for dest_vertex in destinations:
+            machine_edge = application_edge.create_machine_edge(
+                source_vertex, dest_vertex,
+                "machine_edge_for{}".format(application_edge.label))
+            machine_graph.add_edge(
+                machine_edge, application_partition.identifier)
+
+            # add constraints from the application partition
+            machine_partition = machine_graph. \
+                get_outgoing_edge_partition_starting_at_vertex(
+                source_vertex, application_partition.identifier)
+            machine_partition.add_constraints(
+                application_partition.constraints)
+
+            # update mapping object
+            graph_mapper.add_edge_mapping(
+                machine_edge, application_edge)
+
+
 def generate_machine_edges(machine_graph, graph_mapper, application_graph):
     """ Generate the machine edges for the vertices in the graph
 
@@ -42,36 +77,14 @@ def generate_machine_edges(machine_graph, graph_mapper, application_graph):
 
     # start progress bar
     progress = ProgressBar(
-        machine_graph.n_vertices, "Partitioning graph edges")
+        application_graph.n_outgoing_edge_partitions,
+        "Partitioning graph edges")
 
-    # Partition edges according to vertex partitioning
-    for source_vertex in progress.over(machine_graph.vertices):
-
-        # For each out edge of the parent vertex...
-        vertex = graph_mapper.get_application_vertex(source_vertex)
-        application_outgoing_partitions = application_graph.\
-            get_outgoing_edge_partitions_starting_at_vertex(vertex)
-        for application_partition in application_outgoing_partitions:
-            for application_edge in application_partition.edges:
-                # create new partitions
-                for dest_vertex in graph_mapper.get_machine_vertices(
-                        application_edge.post_vertex):
-                    machine_edge = application_edge.create_machine_edge(
-                        source_vertex, dest_vertex,
-                        "machine_edge_for{}".format(application_edge.label))
-                    machine_graph.add_edge(
-                        machine_edge, application_partition.identifier)
-
-                    # add constraints from the application partition
-                    machine_partition = machine_graph.\
-                        get_outgoing_edge_partition_starting_at_vertex(
-                            source_vertex, application_partition.identifier)
-                    machine_partition.add_constraints(
-                        application_partition.constraints)
-
-                    # update mapping object
-                    graph_mapper.add_edge_mapping(
-                        machine_edge, application_edge)
+    for application_partition in application_graph.outgoing_edge_partitions:
+        progress.update(1)
+        for application_edge in application_partition.edges:
+            _process_edge(application_edge, machine_graph, graph_mapper,
+                          application_partition)
 
 
 def get_remaining_constraints(vertex):
