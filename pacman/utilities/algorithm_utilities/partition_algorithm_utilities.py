@@ -26,21 +26,19 @@ from pacman.model.constraints.partitioner_constraints import (
     AbstractPartitionerConstraint, SameAtomsAsVertexConstraint)
 
 
-def _get_source_vertexes(app_vertex, graph_mapper):
-    return graph_mapper.get_machine_vertices(app_vertex)
+def _get_source_vertexes(application_edge, graph_mapper):
+    return graph_mapper.get_machine_vertices(application_edge.pre_vertex)
 
 
-def _get_destination_vertexes(app_vertex, graph_mapper):
-    return graph_mapper.get_machine_vertices(app_vertex)
+def _get_destination_vertexes(application_edge, graph_mapper):
+    return graph_mapper.get_machine_vertices(application_edge.post_vertex)
 
 
 def _process_edge(
         application_edge, machine_graph, graph_mapper,
         application_partition):
-    sources = _get_source_vertexes(
-        application_edge.pre_vertex, graph_mapper)
-    destinations = _get_destination_vertexes(
-        application_edge.post_vertex, graph_mapper)
+    sources = _get_source_vertexes(application_edge, graph_mapper)
+    destinations = _get_destination_vertexes(application_edge, graph_mapper)
     for source_vertex in sources:
         for dest_vertex in destinations:
             machine_edge = application_edge.create_machine_edge(
