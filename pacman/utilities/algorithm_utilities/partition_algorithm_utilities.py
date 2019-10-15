@@ -27,11 +27,48 @@ from pacman.model.constraints.partitioner_constraints import (
 
 
 def _get_source_vertexes(application_edge, graph_mapper):
+    """
+    This methods finds the source machine vertexes for which machine
+        application edges could be made.
+
+    :param application_edge:
+    :param graph_mapper:
+    :return:
+    """
     return graph_mapper.get_machine_vertices(application_edge.pre_vertex)
 
 
 def _get_destination_vertexes(application_edge, graph_mapper):
+    """
+    This methods finds the destination machine vertexes for which machine
+        application edges could be made.
+
+    :param application_edge:
+    :param graph_mapper:
+    :return:
+    """
     return graph_mapper.get_machine_vertices(application_edge.post_vertex)
+
+
+def _is_filterable(application_edge, source_vertex, dest_vertex):
+    """
+    Adds the ability to filter edges before even adding them to the graph
+
+    A False result does not mean that the edge could not later be filtered out
+    only that the filtering is not done here.
+
+    :param application_edge:
+    :param source_vertex: A source which MachineEdges would be added
+        in an unfiltered version
+    :type source_vertex: MachineVertex
+    :param dest_vertex: A destination which for which MachineEdges would
+        be added in an unfiltered version
+    :type dest_vertex: MachineVertex
+    :return: True if and only if a MachineEdge between these vertexes would
+        be filtered out.
+
+    """
+    return False
 
 
 def _process_edge(
@@ -41,6 +78,9 @@ def _process_edge(
     destinations = _get_destination_vertexes(application_edge, graph_mapper)
     for source_vertex in sources:
         for dest_vertex in destinations:
+            if _is_filterable(application_edge, source_vertex, dest_vertex):
+                continue
+
             machine_edge = application_edge.create_machine_edge(
                 source_vertex, dest_vertex,
                 "machine_edge_for{}".format(application_edge.label))
